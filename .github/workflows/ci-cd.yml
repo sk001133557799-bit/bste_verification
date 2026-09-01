@@ -39,41 +39,9 @@ jobs:
       - name: Run Next.js Linting
         run: npm run lint
 
-  docker-build:
-    name: Build & Push Docker Container Images
-    needs: lint-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build Next.js Container Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          tags: bste/frontend:latest
-
-      - name: Copy Prisma Schema to Backend
-        run: cp -r prisma backend/prisma
-
-      - name: Build NestJS Backend Container Image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: false
-          tags: bste/backend:latest
-
   deploy-production:
     name: Deploy to Production Cloud
-    needs: docker-build
+    needs: lint-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
