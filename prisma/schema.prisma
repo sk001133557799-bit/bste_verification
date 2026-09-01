@@ -1,0 +1,107 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  email        String?  @unique
+  fullName     String   @map("full_name")
+  passwordHash String   @map("password_hash")
+  role         String   @default("ADMIN") // Role: ADMIN
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Student {
+  id                 String   @id @default(cuid())
+  studentName        String   @map("student_name")
+  fatherName         String?  @map("father_name")
+  rollNumber         String   @unique @map("roll_number")
+  registrationNumber String?  @map("registration_number")
+  program            String   @map("program") // e.g. DAE Computer Information Technology
+  semester           String   @map("semester") // e.g. 6th Semester / 3rd Year
+  session            String   @map("session") // e.g. Annual Examination 2026
+  instituteName      String?  @default("Islamabad College of Technology (ICT)") @map("institute_name")
+  cnic               String?  @default("61101-1234567-1")
+  gender             String?  @default("Male")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  results            Result[]
+
+  @@index([rollNumber])
+  @@index([registrationNumber])
+  @@map("students")
+}
+
+model Result {
+  id                 String    @id @default(cuid())
+  studentId          String    @map("student_id")
+  student            Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  
+  totalMarks         Int       @map("total_marks")
+  obtainedMarks      Int       @map("obtained_marks")
+  percentage         Float     @map("percentage")
+  gpa                Float?    @default(4.0)
+  grade              String    @map("grade") // A+, A, B, C, D, F
+  status             String    @default("PASSED") @map("status") // PASSED / FAILED
+  
+  verificationId     String    @unique @default(cuid()) @map("verification_id")
+  issueDate          DateTime  @default(now()) @map("issue_date")
+  signatoryName      String    @default("Muhammad Sohail") @map("signatory_name")
+  signatoryTitle     String    @default("Prof. in Astrophysics and Controller of Examination") @map("signatory_title")
+  
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  // Relationships
+  subjects           Subject[]
+
+  @@index([studentId])
+  @@index([verificationId])
+  @@map("results")
+}
+
+model Subject {
+  id                String   @id @default(cuid())
+  resultId          String   @map("result_id")
+  result            Result   @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  
+  subjectCode       String   @default("SUBJ") @map("subject_code")
+  subjectName       String   @map("subject_name")
+  theoryMax         Int      @default(100) @map("theory_max")
+  theoryObtained    Int      @default(0) @map("theory_obtained")
+  practicalMax      Int      @default(0) @map("practical_max")
+  practicalObtained Int      @default(0) @map("practical_obtained")
+  totalMax          Int      @default(100) @map("total_max")
+  totalObtained     Int      @default(0) @map("total_obtained")
+  marks             Int?     @map("marks")
+  grade             String   @default("A") @map("grade")
+  status            String   @default("PASS") @map("status") // PASS / FAIL
+  
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@index([resultId])
+  @@map("subjects")
+}
+
+model ActivityLog {
+  id         String   @id @default(cuid())
+  userId     String?  @map("user_id")
+  action     String   @map("action") // CREATE_RESULT, UPDATE_RESULT, DELETE_RESULT, BULK_IMPORT, ADMIN_LOGIN
+  targetId   String?  @map("target_id")
+  details    String?  @map("details") // JSON stringified details
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("activity_logs")
+}

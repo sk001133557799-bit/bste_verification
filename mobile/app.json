@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "BSTE Islamabad",
+    "slug": "bste-islamabad",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B2545"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "pk.edu.bste.results",
+      "infoPlist": {
+        "NSCameraUsageDescription": "BSTE Islamabad needs camera access to scan certificate QR codes for instant academic authenticity verification.",
+        "NSPhotoLibraryUsageDescription": "BSTE Islamabad needs photo library access to upload examination answer sheets and student documents."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B2545"
+      },
+      "package": "pk.edu.bste.results",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bste-islamabad-mobile"
+      },
+      "apiBaseUrl": "http://localhost:3000/api/v1/mobile"
+    }
+  }
+}

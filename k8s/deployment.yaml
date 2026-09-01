@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bste-frontend-deployment
+  namespace: bste-production
+  labels:
+    app: bste-frontend
+    tier: presentation
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: bste-frontend
+  template:
+    metadata:
+      labels:
+        app: bste-frontend
+    spec:
+      containers:
+        - name: nextjs-app
+          image: bste-registry.azurecr.io/bste-frontend:2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: bste-config
+            - secretRef:
+                name: bste-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1536Mi"
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bste-backend-deployment
+  namespace: bste-production
+  labels:
+    app: bste-backend
+    tier: microservices
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: bste-backend
+  template:
+    metadata:
+      labels:
+        app: bste-backend
+    spec:
+      containers:
+        - name: nestjs-api
+          image: bste-registry.azurecr.io/bste-backend:2.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - configMapRef:
+                name: bste-config
+            - secretRef:
+                name: bste-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1024Mi"
+          livenessProbe:
+            httpGet:
+              path: /api/docs
+              port: 4000
+            initialDelaySeconds: 15
+            periodSeconds: 10

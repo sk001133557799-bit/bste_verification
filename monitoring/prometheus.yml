@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "bste-frontend"
+    metrics_path: "/api/health"
+    static_configs:
+      - targets: ["frontend:3000"]
+
+  - job_name: "bste-backend"
+    metrics_path: "/api/docs"
+    static_configs:
+      - targets: ["backend:4000"]
+
+  - job_name: "bste-database"
+    static_configs:
+      - targets: ["postgres:5432"]
+
+  - job_name: "bste-nginx"
+    static_configs:
+      - targets: ["nginx:80"]

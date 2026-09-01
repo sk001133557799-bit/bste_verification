@@ -1,0 +1,90 @@
+version: "3.8"
+
+services:
+  # PostgreSQL 16 Production Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: bste-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: bste_db
+      POSTGRES_USER: bste_admin
+      POSTGRES_PASSWORD: bste_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - bste_pgdata:/var/lib/postgresql/data
+    networks:
+      - bste-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bste_admin -d bste_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # NestJS Enterprise API Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bste-backend
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: "postgresql://bste_admin:bste_secure_password_2026@postgres:5432/bste_db?schema=public"
+      JWT_SECRET: "bste_islamabad_enterprise_jwt_secret_key_2026_super_secure"
+      JWT_EXPIRATION: "15m"
+      JWT_REFRESH_SECRET: "bste_islamabad_refresh_jwt_secret_key_2026"
+      JWT_REFRESH_EXPIRATION: "7d"
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bste-network
+
+  # Next.js Public Portal & Admin/Teacher Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bste-frontend
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: "postgresql://bste_admin:bste_secure_password_2026@postgres:5432/bste_db?schema=public"
+      JWT_SECRET: "bste_islamabad_enterprise_jwt_secret_key_2026_super_secure"
+      NEXT_PUBLIC_APP_URL: "https://bste.edu.pk"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bste-network
+
+  # NGINX Reverse Proxy & SSL Termination
+  nginx:
+    image: nginx:alpine
+    container_name: bste-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - bste-network
+
+volumes:
+  bste_pgdata:
+
+networks:
+  bste-network:
+    driver: bridge

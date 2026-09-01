@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+**/node_modules/
+/.pnp
+.pnp.js
+
+# Testing & Scratch Scripts
+/scratch
+*.log
+test_*.js
+cookies.txt
+
+# Next.js & Framework Build Output
+.next/
+out/
+build/
+dist/
+
+# Environment Variables & Secrets
+.env
+.env*.local
+!.env.example
+
+# IDE & OS Files
+.DS_Store
+*.pem
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
