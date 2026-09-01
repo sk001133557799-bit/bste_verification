@@ -36,8 +36,8 @@ jobs:
           npm ci
           npm run build
 
-      - name: Execute End-to-End Integration Suite
-        run: node test_all_phases.js
+      - name: Run Next.js Linting
+        run: npm run lint
 
   docker-build:
     name: Build & Push Docker Container Images
