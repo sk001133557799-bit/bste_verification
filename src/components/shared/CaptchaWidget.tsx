@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { RefreshCw, ShieldCheck } from "lucide-react";
 
 interface CaptchaWidgetProps {
@@ -13,7 +13,7 @@ export default function CaptchaWidget({ onValidate }: CaptchaWidgetProps) {
   const [userInput, setUserInput] = useState("");
   const [error, setError] = useState(false);
 
-  const generateCaptcha = () => {
+  const generateCaptcha = useCallback(() => {
     const n1 = Math.floor(Math.random() * 9) + 1;
     const n2 = Math.floor(Math.random() * 9) + 1;
     setNum1(n1);
@@ -21,11 +21,11 @@ export default function CaptchaWidget({ onValidate }: CaptchaWidgetProps) {
     setUserInput("");
     setError(false);
     onValidate(false);
-  };
+  }, [onValidate]);
 
   useEffect(() => {
     generateCaptcha();
-  }, []);
+  }, [generateCaptcha]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.trim();

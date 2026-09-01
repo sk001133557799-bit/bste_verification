@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   AlertCircle,
@@ -80,7 +80,7 @@ export default function AdminStudentsLedgerPage() {
   const [recordToDelete, setRecordToDelete] = useState<any>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const fetchResults = async () => {
+  const fetchResults = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -107,11 +107,11 @@ export default function AdminStudentsLedgerPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, filterStatus, filterGrade, page]);
 
   useEffect(() => {
     fetchResults();
-  }, [search, filterStatus, filterGrade, page]);
+  }, [fetchResults]);
 
   // Live auto-calculation helper
   const calculateLiveTotals = () => {
