@@ -94,7 +94,7 @@ export async function GET(
   } catch (err: any) {
     console.error("Direct Cert Verify API Error:", err);
     return NextResponse.json(
-      { error: "Internal database error occurred while retrieving certificate." },
+      { error: "Database error: " + (err?.message || "Internal database error") },
       { status: 500 }
     );
   }

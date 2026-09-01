@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
   } catch (err: any) {
     console.error("Login API Error:", err);
     return NextResponse.json(
-      { error: "Internal server error during authentication." },
+      { error: "Authentication error: " + (err?.message || "Internal server error") },
       { status: 500 }
     );
   }
